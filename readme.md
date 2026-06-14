@@ -1,3 +1,8 @@
+## Example Surface Layout
+
+![Example data](./assets/example_data.png)
+![Example layout](./assets/example_layout.png)
+
 ## Prerequisites
 
 Before running the script, you will need to register applications on both developer portals:
