@@ -4,6 +4,19 @@ import { OsuProfile } from "../types/osuProfile";
 const OSU_CLIENT_ID = process.env.OSU_CLIENT_ID!;
 const OSU_CLIENT_SECRET = process.env.OSU_CLIENT_SECRET!;
 
+const parseOsuMode = (mode?: string): string => {
+  const m = (mode || "STD").toUpperCase();
+  const mapping: Record<string, string> = {
+    STD: "osu",
+    MANIA: "mania",
+    TAIKO: "taiko",
+    CATCH: "fruits",
+  };
+  return mapping[m] || "osu";
+};
+
+const mappedMode = parseOsuMode(process.env.OSU_MODE);
+
 async function getOsuToken(): Promise<string> {
   try {
     const response = await axios.post("https://osu.ppy.sh/oauth/token", {
@@ -36,13 +49,19 @@ export async function fetchOsuProfile(username: string): Promise<OsuProfile> {
   };
 
   try {
-    const userRes = await axios.get(`https://osu.ppy.sh/api/v2/users/${username}/osu`, apiConfig);
+    const userRes = await axios.get(`https://osu.ppy.sh/api/v2/users/${username}/${mappedMode}`, apiConfig);
     const user = userRes.data;
     const userId = user.id;
 
     const [topPlayRes, mostPlayedRes] = await Promise.all([
-      axios.get(`https://osu.ppy.sh/api/v2/users/${userId}/scores/best`, { ...apiConfig, params: { limit: 1 } }),
-      axios.get(`https://osu.ppy.sh/api/v2/users/${userId}/beatmapsets/most_played`, { ...apiConfig, params: { limit: 1 } })
+      axios.get(`https://osu.ppy.sh/api/v2/users/${userId}/scores/best`, { 
+        ...apiConfig, 
+        params: { limit: 1, mode: mappedMode } 
+      }),
+      axios.get(`https://osu.ppy.sh/api/v2/users/${userId}/beatmapsets/most_played`, { 
+        ...apiConfig, 
+        params: { limit: 1 } 
+      })
     ]);
 
     const topPlay = topPlayRes.data;
@@ -73,7 +92,7 @@ export async function fetchOsuProfile(username: string): Promise<OsuProfile> {
       flag: `https://flagsapi.com/${user.country_code}/flat/64.png`,
     };
   } catch (error: any) {
-    console.error(`ERROR osu! profile resolution failed for user [${username}]`);
+    console.error(`ERROR osu! profile resolution failed for user [${username}] in mode [${mappedMode}]`);
     if (error.response) {
       console.error(`ERROR URL: ${error.config?.url} | Status: ${error.response.status} | Data:`, JSON.stringify(error.response.data));
     } else {
