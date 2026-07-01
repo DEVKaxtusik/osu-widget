@@ -1,0 +1,42 @@
+name: Profile Update
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9 
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24' 
+          cache: 'pnpm'
+        
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Run Synchronization Pipeline
+        run: pnpm dlx ts-node src/index.ts
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          OSU_CLIENT_SECRET: ${{ secrets.OSU_CLIENT_SECRET }}
+          APP_ID: ${{ vars.APP_ID }}
+          DISCORD_USER_ID: ${{ vars.DISCORD_USER_ID }}
+          OSU_CLIENT_ID: ${{ vars.OSU_CLIENT_ID }}
+          OSU_MODE: ${{ vars.OSU_MODE }}
+          OSU_NAME: ${{ vars.OSU_NAME }}
+          
+      - name: Status - Failure Notification
+        if: failure()
+        run: echo "::error::The profile update script failed to run. Check the logs above."
