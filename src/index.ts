@@ -6,7 +6,7 @@ import { toIdentity } from "./types/osuProfile";
 
 async function run() {
   const userID = process.env.DISCORD_USER_ID!;
-  const profile = await fetchOsuProfile("OSU_USERNAME"); // Here your osu! username
+  const profile = await fetchOsuProfile(process.env.OSU_NAME!);
 
   const identity = toIdentity(profile);
 
