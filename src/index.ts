@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 dotenv.config();
-import { patchIdentity } from "./providers/discord";
+import { createWidget, patchIdentity } from "./providers/discord";
 import { fetchOsuProfile } from "./providers/osu";
 import { toIdentity } from "./types/osuProfile";
 
