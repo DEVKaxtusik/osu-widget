@@ -27,7 +27,7 @@ jobs:
         run: pnpm install
 
       - name: Run Synchronization Pipeline
-        run: pnpm dlx ts-node src/index.ts
+        run: pnpm dlx tsx src/index.ts
         env:
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
           OSU_CLIENT_SECRET: ${{ secrets.OSU_CLIENT_SECRET }}
