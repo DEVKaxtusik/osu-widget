@@ -30,7 +30,7 @@ Copy `.env.example` to a new file named `.env` in the root directory and populat
 To execute the synchronization pipeline once:
 
 ```bash
-pnpm dlx ts-node src/index.ts
+pnpm dlx tsx src/index.ts
 
 ```
 
